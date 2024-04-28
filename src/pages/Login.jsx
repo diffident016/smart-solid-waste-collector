@@ -1,6 +1,7 @@
 import React, { useReducer, useState } from "react";
 import logo from "../assets/images/logo.png";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [onLogin, setLogin] = useState(false);
@@ -8,6 +9,8 @@ function Login() {
   //   const [onReset, setOnReset] = useState(false);
   //   const [sent, setSent] = useState(false);
   //   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const [form, updateForm] = useReducer(
     (prev, next) => {

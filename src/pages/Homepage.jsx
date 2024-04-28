@@ -10,6 +10,7 @@ import {
   HomeIcon,
   MegaphoneIcon,
 } from "@heroicons/react/24/outline";
+import Navbar from "../components/Navbar";
 
 function Homepage() {
   const [screen, setScreen] = useState(0);
@@ -19,33 +20,38 @@ function Homepage() {
       label: "Dashboard",
       component: <Dashboard />,
       icon: <HomeIcon />,
-      header: "",
+      header: "Garbage Truck Map Tracker",
     },
     {
       label: "Announcement",
       component: <Announcement />,
       icon: <MegaphoneIcon />,
-      header: "",
+      header: "Announcements",
     },
     {
       label: "Schedule",
       component: <Schedule />,
       icon: <CalendarIcon />,
-      header: "",
+      header: "Barangay Schedule",
     },
     {
       label: "Feedback",
       component: <Feedback />,
       icon: <ChatBubbleLeftIcon />,
-      header: "",
+      header: "Residents Feedback",
     },
   ];
 
   return (
     <div className="w-full h-screen flex flex-row font-inter text-[#F2F2F2] overflow-hidden">
       <Sidebar screens={screens} screen={screen} setScreen={setScreen} />
+      <div className="flex-1 h-full flex flex-col p-4 gap-4">
+        <Navbar screen={screens[screen]} />
+        {screens[screen].component}
+      </div>
     </div>
   );
+  s;
 }
 
 export default Homepage;
