@@ -2,6 +2,8 @@ import React, { useReducer, useState } from "react";
 import logo from "../assets/images/logo.png";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
+import { useAuth } from "../auth/AuthContext";
 
 function Login() {
   const [onLogin, setLogin] = useState(false);
@@ -11,6 +13,7 @@ function Login() {
   //   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const { login, resetPassword } = useAuth();
 
   const [form, updateForm] = useReducer(
     (prev, next) => {
@@ -23,8 +26,18 @@ function Login() {
     }
   );
 
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
+
+    setLogin(true);
+    try {
+      await login(form.email, form.password);
+      navigate("/");
+    } catch (e) {
+      console.log(e);
+      setLogin(false);
+      updateForm({ error: "Invalid email or password." });
+    }
   };
 
   return (
@@ -88,9 +101,7 @@ function Login() {
             </div>
 
             <button
-              onClick={() => {
-                navigate("/");
-              }}
+              disabled={onLogin}
               type="submit"
               className="mt-8 flex w-full h-14 bg-[#19AF0C] rounded-xl justify-center items-center"
             >

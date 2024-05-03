@@ -6,10 +6,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { Backdrop } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 
 function Sidebar({ screens, screen, setScreen }) {
   const [isLogout, setLogout] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   return (
     <div className="w-[300px] h-full bg-[#296441F5]/95 text-[#F2f2f2] select-none">
@@ -81,7 +83,7 @@ function Sidebar({ screens, screen, setScreen }) {
             </button>
             <button
               onClick={() => {
-                navigate("/login");
+                logout();
               }}
               className="bg-[#19AF0C] w-[150px] h-10 rounded-lg text-white mt-4 self-center text-sm"
             >

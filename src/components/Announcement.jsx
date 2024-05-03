@@ -1,11 +1,17 @@
 import { MegaphoneIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Backdrop } from "@mui/material";
-import { format, formatDistance } from "date-fns";
+import { formatDistanceToNowStrict } from "date-fns";
 import React, { useState } from "react";
+import { show } from "../states/alerts";
+import { useDispatch } from "react-redux";
+import { addAnnouncement } from "../api/Services";
 
-function Announcement() {
+function Announcement({ announcements }) {
   const [isCreate, setCreate] = useState(false);
   const [message, setMessage] = useState("");
+
+  const dispatch = useDispatch();
+
   const [sample, setSample] = useState([
     {
       announcement: "This is a sample announcement.",
@@ -17,20 +23,33 @@ function Announcement() {
     },
   ]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    var temp = [];
-    temp.push({
-      announcement: message,
-      createdAt: new Date(),
-    });
-
-    temp = temp.concat(sample);
-
-    setSample(temp);
-    setMessage("");
-    setCreate(false);
+    addAnnouncement(message)
+      .then((_) => {
+        setMessage("");
+        setCreate(false);
+        dispatch(
+          show({
+            type: "success",
+            message: "Announcement has been posted successfully.",
+            duration: 3000,
+            show: true,
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(
+          show({
+            type: "error",
+            message: "Something went wrong.",
+            duration: 3000,
+            show: true,
+          })
+        );
+      });
   };
 
   return (
@@ -39,7 +58,7 @@ function Announcement() {
         <div className="flex-1 px-4 flex flex-col overflow-hidden">
           <div className="border-dashed border w-full my-6 h-[1px] border-[#F2f2f2]" />
           <div className="w-full h-full flex flex-col overflow-auto gap-3 my-2">
-            {sample.map((item) => {
+            {announcements["data"].map((item) => {
               return (
                 <div className=" bg-[#19AF0C] h-16 rounded-lg flex flex-row items-center px-4 gap-2">
                   <MegaphoneIcon className="w-6" />
@@ -47,7 +66,9 @@ function Announcement() {
                     {item.announcement}
                   </h1>
                   <p className="text-sm font-inter-light">
-                    {formatDistance(item.createdAt, Date.now())}
+                    {formatDistanceToNowStrict(item.postedAt.toDate(), {
+                      addSuffix: true,
+                    })}
                   </p>
                 </div>
               );
