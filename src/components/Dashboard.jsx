@@ -81,7 +81,7 @@ function Dashboard() {
       });
 
       const tempM = [points[points.length - 1]].map((item) =>
-        L.marker(item).addTo(map)
+        L.marker(item, { icon: iconDefault }).addTo(map)
       );
 
       temp.addTo(map);
