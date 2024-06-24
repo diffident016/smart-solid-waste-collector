@@ -105,12 +105,15 @@ function Homepage() {
           return;
         }
 
-        var data = snapshot.docs.map((doc, index) => {
-          var temp = doc.data();
-          temp["no"] = index + 1;
-          temp["id"] = doc.id;
-          return temp;
-        });
+        var data = snapshot.docs
+          .map((doc) => {
+            var temp = doc.data();
+            temp["id"] = doc.id;
+            return temp;
+          })
+          .sort(function (a, b) {
+            return b.postedAt - a.postedAt;
+          });
 
         setAnnouncements({
           fetchState: 1,

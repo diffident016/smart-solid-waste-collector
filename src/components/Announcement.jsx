@@ -1,39 +1,47 @@
-import { MegaphoneIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Backdrop } from "@mui/material";
+import {
+  EllipsisVerticalIcon,
+  MegaphoneIcon,
+  PencilSquareIcon,
+  PlusIcon,
+  TrashIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import {
+  Backdrop,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  MenuList,
+} from "@mui/material";
 import { formatDistanceToNowStrict } from "date-fns";
 import React, { useState } from "react";
+import AnnouncementForm from "./AnnouncementForm";
+import PopupDialog from "./PopupDialog";
+import { deleteAnnouncement } from "../api/Services";
 import { show } from "../states/alerts";
 import { useDispatch } from "react-redux";
-import { addAnnouncement } from "../api/Services";
 
 function Announcement({ announcements }) {
   const [isCreate, setCreate] = useState(false);
-  const [message, setMessage] = useState("");
+  const [isUpdate, setUpdate] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [isDelete, setDelete] = useState(null);
 
   const dispatch = useDispatch();
+  const open = Boolean(anchorEl);
 
-  const [sample, setSample] = useState([
-    {
-      announcement: "This is a sample announcement.",
-      createdAt: new Date(),
-    },
-    {
-      announcement: "This is a sample announcement.",
-      createdAt: new Date(),
-    },
-  ]);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    addAnnouncement(message)
+  const handleDelete = (item) => {
+    deleteAnnouncement(item.id)
       .then((_) => {
-        setMessage("");
-        setCreate(false);
         dispatch(
           show({
             type: "success",
-            message: "Announcement has been posted successfully.",
+            message: "Announcement has been deleted successfully.",
             duration: 3000,
             show: true,
           })
@@ -60,7 +68,10 @@ function Announcement({ announcements }) {
           <div className="w-full h-full flex flex-col overflow-auto gap-3 my-2">
             {announcements["data"].map((item) => {
               return (
-                <div className=" bg-[#19AF0C] h-16 rounded-lg flex flex-row items-center px-4 gap-2">
+                <div
+                  key={item.id}
+                  className=" bg-[#19AF0C] h-16 rounded-lg flex flex-row items-center px-4 gap-2"
+                >
                   <MegaphoneIcon className="w-6" />
                   <h1 className="flex-1 text-lg font-inter">
                     {item.announcement}
@@ -70,6 +81,13 @@ function Announcement({ announcements }) {
                       addSuffix: true,
                     })}
                   </p>
+                  <EllipsisVerticalIcon
+                    className="w-6 cursor-pointer select-none"
+                    onClick={(e) => {
+                      handleClick(e);
+                      setSelected(item);
+                    }}
+                  />
                 </div>
               );
             })}
@@ -88,40 +106,68 @@ function Announcement({ announcements }) {
       </div>
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isCreate}
+        open={isCreate || !!isUpdate}
       >
-        <form
-          onSubmit={handleSubmit}
-          className="w-[400px] h-[350px] bg-[#A5D8B6] rounded-lg flex flex-col p-4 text-[#2f2f2f]"
-        >
-          <div className="w-full flex flex-row justify-between items-center">
-            <h1 className="font-inter-bold text-lg">Create Announcement</h1>
-            <div
-              onClick={() => {
-                setCreate(false);
-              }}
-              className="p-[2px] bg-red-800 rounded-full cursor-pointer"
-            >
-              <XMarkIcon className="w-4 h-4 text-white" />
-            </div>
-          </div>
-          <textarea
-            rows={8}
-            required
-            placeholder="Input message..."
-            onChange={(e) => {
-              setMessage(e.target.value);
+        {(isCreate || !!isUpdate) && (
+          <AnnouncementForm
+            update={isUpdate}
+            close={() => {
+              setCreate(false);
+              setUpdate(null);
             }}
-            className="mt-2 bg-[#E9E9E9]/60 rounded-md resize-none focus:outline-none p-4 placeholder:text-[#2f2f2f]/80"
           />
-          <button
-            type="submit"
-            className="bg-[#19AF0C] w-[150px] h-9 rounded-lg text-white mt-4 self-center text-sm"
-          >
-            Post
-          </button>
-        </form>
+        )}
       </Backdrop>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        dense={"true"}
+        onClose={() => {
+          setAnchorEl(null);
+        }}
+        className="p-0"
+      >
+        <MenuList className="focus:outline-none p-0 ">
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              setUpdate(selected);
+            }}
+          >
+            <ListItemIcon>
+              <PencilSquareIcon className="w-4" />
+            </ListItemIcon>
+            <p className="text-sm">Update</p>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              setDelete(selected);
+            }}
+          >
+            <ListItemIcon>
+              <TrashIcon className="w-4" />
+            </ListItemIcon>
+            <p className="text-sm">Delete</p>
+          </MenuItem>
+        </MenuList>
+      </Menu>
+      <PopupDialog
+        show={!!isDelete}
+        close={() => {
+          setDelete(null);
+        }}
+        title="Delete Announcement"
+        content="Are you sure you want to delete this announcement?"
+        action1={() => {
+          handleDelete(isDelete);
+          setDelete(null);
+        }}
+        action2={() => {
+          setDelete(null);
+        }}
+      />
     </div>
   );
 }

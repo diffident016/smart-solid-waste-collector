@@ -29,6 +29,16 @@ const addAnnouncement = (message) => {
   });
 };
 
+const updateAnnouncement = (id, message) => {
+  const ref = doc(db, "Announcements", id);
+
+  return updateDoc(ref, { announcement: message });
+};
+
+const deleteAnnouncement = (id) => {
+  return deleteDoc(doc(db, "Announcements", id));
+};
+
 const addSchedule = (form) => {
   var sched = form;
   sched["addedAt"] = Timestamp.now();
@@ -61,6 +71,8 @@ export {
   getUser,
   addAnnouncement,
   getAnnouncements,
+  updateAnnouncement,
+  deleteAnnouncement,
   onSnapshot,
   addSchedule,
   getSchedules,
