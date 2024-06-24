@@ -14,7 +14,12 @@ import Navbar from "../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
 import { hide } from "../states/alerts";
 import { Alert, Snackbar } from "@mui/material";
-import { getAnnouncements, getSchedules, onSnapshot } from "../api/Services";
+import {
+  getAnnouncements,
+  getFeedbacks,
+  getSchedules,
+  onSnapshot,
+} from "../api/Services";
 
 function Homepage() {
   const [screen, setScreen] = useState(0);
@@ -23,6 +28,17 @@ function Homepage() {
   const alert = useSelector((state) => state.alert.value);
 
   const [announcements, setAnnouncements] = useReducer(
+    (prev, next) => {
+      return { ...prev, ...next };
+    },
+    {
+      fetchState: 0,
+      data: [],
+      count: 0,
+    }
+  );
+
+  const [feedbacks, setFeedbacks] = useReducer(
     (prev, next) => {
       return { ...prev, ...next };
     },
@@ -129,6 +145,43 @@ function Homepage() {
     }
   }, []);
 
+  useEffect(() => {
+    const query = getFeedbacks();
+
+    try {
+      const unsub = onSnapshot(query, (snapshot) => {
+        if (!snapshot) {
+          setFeedbacks({ fetchState: -1 });
+          return;
+        }
+
+        if (snapshot.empty) {
+          setFeedbacks({ fetchState: 2 });
+          return;
+        }
+
+        var data = snapshot.docs.map((doc, index) => {
+          var temp = doc.data();
+          temp["no"] = index + 1;
+          temp["id"] = doc.id;
+
+          return temp;
+        });
+
+        setFeedbacks({
+          fetchState: 1,
+          data: data,
+        });
+      });
+
+      return () => {
+        unsub();
+      };
+    } catch {
+      setFeedbacks({ fetchState: -1 });
+    }
+  }, []);
+
   const screens = [
     {
       label: "Dashboard",
@@ -150,7 +203,7 @@ function Homepage() {
     },
     {
       label: "Feedback",
-      component: <Feedback />,
+      component: <Feedback feedbacks={feedbacks} />,
       icon: <ChatBubbleLeftIcon />,
       header: "Residents Feedback",
     },

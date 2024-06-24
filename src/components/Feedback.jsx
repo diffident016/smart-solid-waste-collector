@@ -1,7 +1,11 @@
-import React, { useMemo } from "react";
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import { Backdrop } from "@mui/material";
+import React, { useMemo, useState } from "react";
 import DataTable from "react-data-table-component";
+import FeedbackPreview from "./FeedbackPreview";
 
-function Feedback() {
+function Feedback({ feedbacks }) {
+  const [preview, setPreview] = useState(null);
   const columns = useMemo(() => [
     {
       name: "#",
@@ -12,18 +16,32 @@ function Feedback() {
     },
     {
       name: "Name",
-      cell: (row) => <p className="text-sm">{row.name}</p>,
-      width: "300px",
+      cell: (row) => <p className="text-sm">{row.Name}</p>,
+      width: "250px",
     },
     {
       name: "Email",
-      selector: (row) => row.email,
+      selector: (row) => row.Email,
       width: "250px",
     },
     {
       name: "Feedback",
-      cell: (row) => <p className="text-sm">{row.feedback}</p>,
-      width: "250px",
+      cell: (row) => <p className="text-sm">{row.Feedback}</p>,
+      width: "350px",
+    },
+    {
+      name: "",
+      cell: (row) => (
+        <p
+          onClick={() => {
+            setPreview(row);
+          }}
+          className="text-xs underline cursor-pointer hover:text-blue-800"
+        >
+          View
+        </p>
+      ),
+      width: "60px",
     },
   ]);
 
@@ -31,14 +49,14 @@ function Feedback() {
     <div className="w-full h-full overflow-hidden">
       <div className="w-full h-full bg-[#D9D9D9] rounded-lg">
         <DataTable
-          className="font-inter h-full overflow-hidden rounded-lg"
+          className="font-inter h-full overflow-hidden rounded-lg text-[#2f2f2f]"
           columns={columns}
-          data={[]}
+          data={feedbacks["data"]}
           customStyles={{
             rows: {
               style: {
                 color: "#607d8b",
-                "font-family": "Lato",
+                "font-family": "Inter",
                 "font-size": "14px",
               },
             },
@@ -57,7 +75,7 @@ function Feedback() {
             },
           }}
           persistTableHead
-          pagination={true}
+          pagination
           fixedHeader
           allowOverflow
           noDataComponent={
@@ -68,6 +86,19 @@ function Feedback() {
             </div>
           }
         />
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={!!preview}
+        >
+          {!!preview && (
+            <FeedbackPreview
+              feedback={preview}
+              close={() => {
+                setPreview(null);
+              }}
+            />
+          )}
+        </Backdrop>
       </div>
     </div>
   );

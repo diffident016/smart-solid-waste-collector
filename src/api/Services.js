@@ -67,6 +67,12 @@ const getSchedules = () => {
   return query(ref, orderBy("addedAt", "asc"));
 };
 
+const getFeedbacks = () => {
+  const ref = collection(db, "Feedbacks");
+
+  return query(ref, orderBy("postedAt", "asc"));
+};
+
 export {
   getUser,
   addAnnouncement,
@@ -76,5 +82,6 @@ export {
   onSnapshot,
   addSchedule,
   getSchedules,
+  getFeedbacks,
   deleteSchedule,
 };
