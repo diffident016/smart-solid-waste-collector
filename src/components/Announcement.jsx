@@ -70,12 +70,10 @@ function Announcement({ announcements }) {
               return (
                 <div
                   key={item.id}
-                  className=" bg-[#19AF0C] h-16 rounded-lg flex flex-row items-center px-4 gap-2"
+                  className=" bg-[#19AF0C] py-2 min-h-16 rounded-lg flex flex-row items-center px-4 gap-2"
                 >
                   <MegaphoneIcon className="w-6" />
-                  <h1 className="flex-1 text-lg font-inter">
-                    {item.announcement}
-                  </h1>
+                  <h1 className="flex-1 font-inter">{item.announcement}</h1>
                   <p className="text-sm font-inter-light">
                     {formatDistanceToNowStrict(item.postedAt.toDate(), {
                       addSuffix: true,

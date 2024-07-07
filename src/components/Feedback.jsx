@@ -3,9 +3,16 @@ import { Backdrop } from "@mui/material";
 import React, { useMemo, useState } from "react";
 import DataTable from "react-data-table-component";
 import FeedbackPreview from "./FeedbackPreview";
+import { show } from "../states/alerts";
+import { useDispatch } from "react-redux";
+import PopupDialog from "./PopupDialog";
+import { deleteFeedback } from "../api/Services";
 
 function Feedback({ feedbacks }) {
   const [preview, setPreview] = useState(null);
+  const [isDelete, setDelete] = useState(null);
+  const dispatch = useDispatch();
+
   const columns = useMemo(() => [
     {
       name: "#",
@@ -32,18 +39,53 @@ function Feedback({ feedbacks }) {
     {
       name: "",
       cell: (row) => (
-        <p
-          onClick={() => {
-            setPreview(row);
-          }}
-          className="text-xs underline cursor-pointer hover:text-blue-800"
-        >
-          View
-        </p>
+        <div className="flex flex-row gap-2">
+          <p
+            onClick={() => {
+              setPreview(row);
+            }}
+            className="text-xs underline cursor-pointer hover:text-blue-800"
+          >
+            View
+          </p>
+          <p
+            onClick={() => {
+              setDelete(row);
+            }}
+            className="text-xs underline cursor-pointer hover:text-blue-800"
+          >
+            Delete
+          </p>
+        </div>
       ),
-      width: "60px",
+      width: "120px",
     },
   ]);
+
+  const handleDelete = (item) => {
+    deleteFeedback(item.id)
+      .then((_) => {
+        dispatch(
+          show({
+            type: "success",
+            message: "Feedback has been deleted successfully.",
+            duration: 3000,
+            show: true,
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(
+          show({
+            type: "error",
+            message: "Something went wrong.",
+            duration: 3000,
+            show: true,
+          })
+        );
+      });
+  };
 
   return (
     <div className="w-full h-full overflow-hidden">
@@ -99,6 +141,21 @@ function Feedback({ feedbacks }) {
             />
           )}
         </Backdrop>
+        <PopupDialog
+          show={!!isDelete}
+          close={() => {
+            setDelete(null);
+          }}
+          title="Delete Feedback"
+          content="Are you sure you want to delete this feedback?"
+          action1={() => {
+            handleDelete(isDelete);
+            setDelete(null);
+          }}
+          action2={() => {
+            setDelete(null);
+          }}
+        />
       </div>
     </div>
   );

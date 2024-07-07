@@ -73,6 +73,10 @@ const getFeedbacks = () => {
   return query(ref, orderBy("postedAt", "asc"));
 };
 
+const deleteFeedback = (id) => {
+  return deleteDoc(doc(db, "Feedbacks", id));
+};
+
 export {
   getUser,
   addAnnouncement,
@@ -84,4 +88,5 @@ export {
   getSchedules,
   getFeedbacks,
   deleteSchedule,
+  deleteFeedback,
 };
