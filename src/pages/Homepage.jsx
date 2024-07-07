@@ -17,12 +17,14 @@ import { Alert, Snackbar } from "@mui/material";
 import {
   getAnnouncements,
   getFeedbacks,
+  getLocations,
   getSchedules,
   onSnapshot,
 } from "../api/Services";
 
 function Homepage() {
   const [screen, setScreen] = useState(0);
+  const [isAddSched, setAddSched] = useState(false);
 
   const dispatch = useDispatch();
   const alert = useSelector((state) => state.alert.value);
@@ -58,6 +60,17 @@ function Homepage() {
       data: [],
       count: 0,
       group: [],
+    }
+  );
+
+  const [locations, setLocations] = useReducer(
+    (prev, next) => {
+      return { ...prev, ...next };
+    },
+    {
+      fetchState: 0,
+      data: [],
+      count: 0,
     }
   );
 
@@ -182,6 +195,41 @@ function Homepage() {
     }
   }, []);
 
+  useEffect(() => {
+    const query = getLocations();
+
+    try {
+      const unsub = onSnapshot(query, (snapshot) => {
+        if (!snapshot) {
+          setLocations({ fetchState: -1 });
+          return;
+        }
+
+        if (snapshot.empty) {
+          setLocations({ fetchState: 2 });
+          return;
+        }
+
+        var data = snapshot.docs.map((doc) => {
+          var temp = doc.data();
+          temp["id"] = doc.id;
+          return temp;
+        });
+
+        setLocations({
+          fetchState: 1,
+          data: data,
+        });
+      });
+
+      return () => {
+        unsub();
+      };
+    } catch {
+      setLocations({ fetchState: -1 });
+    }
+  }, []);
+
   const screens = [
     {
       label: "Dashboard",
@@ -197,7 +245,16 @@ function Homepage() {
     },
     {
       label: "Schedule",
-      component: <Schedule schedules={schedules} />,
+      component: (
+        <Schedule
+          schedules={schedules}
+          isAddSched={isAddSched}
+          locations={locations}
+          close={() => {
+            setAddSched(false);
+          }}
+        />
+      ),
       icon: <CalendarIcon />,
       header: "Barangay Schedule",
     },
@@ -213,7 +270,13 @@ function Homepage() {
     <div className="w-full h-screen flex flex-row font-inter text-[#F2F2F2] overflow-hidden">
       <Sidebar screens={screens} screen={screen} setScreen={setScreen} />
       <div className="flex-1 h-full flex flex-col p-4 gap-4">
-        <Navbar screen={screens[screen]} />
+        <Navbar
+          screen={screens[screen]}
+          index={screen}
+          toggleAdd={() => {
+            setAddSched(true);
+          }}
+        />
         {screens[screen].component}
       </div>
       {alert.show && (

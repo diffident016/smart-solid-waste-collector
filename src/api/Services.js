@@ -77,6 +77,44 @@ const deleteFeedback = (id) => {
   return deleteDoc(doc(db, "Feedbacks", id));
 };
 
+const addLocation = (name) => {
+  return setDoc(doc(collection(db, "Locations")), {
+    name: name,
+    brgy: [],
+    dateAdded: Timestamp.now(),
+  });
+};
+
+const getLocations = () => {
+  const ref = collection(db, "Locations");
+
+  return query(ref, orderBy("dateAdded", "asc"));
+};
+
+const addBrgy = (id, brgy) => {
+  const ref = doc(db, "Locations", id);
+  const brgy_id = String(Date.now()).slice(5, 13);
+
+  return updateDoc(ref, {
+    brgy: arrayUnion({
+      name: brgy,
+      "brgy-id": brgy_id,
+    }),
+  });
+};
+
+const removeBrgy = (id, brgy) => {
+  const ref = doc(db, "Locations", id);
+
+  return updateDoc(ref, { brgy: arrayRemove(brgy) });
+};
+
+const updateBrgy = (id, brgy) => {
+  const ref = doc(db, "Locations", id);
+
+  return updateDoc(ref, { brgy: brgy });
+};
+
 export {
   getUser,
   addAnnouncement,
@@ -89,4 +127,9 @@ export {
   getFeedbacks,
   deleteSchedule,
   deleteFeedback,
+  addLocation,
+  getLocations,
+  addBrgy,
+  removeBrgy,
+  updateBrgy,
 };

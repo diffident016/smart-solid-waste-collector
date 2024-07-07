@@ -10,8 +10,17 @@ import { addSchedule, deleteSchedule } from "../api/Services";
 import { show } from "../states/alerts";
 import { useDispatch } from "react-redux";
 import { format } from "date-fns-tz";
+import ScheduleForm from "./ScheduleForm";
 
-function ScheduleBox({ location, schedules }) {
+function ScheduleBox({
+  location,
+  schedules,
+  select,
+  remove,
+  id,
+  update,
+  brgys,
+}) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [onAdd, setAdd] = useState(false);
   const [onDelete, setDelete] = useState(false);
@@ -132,7 +141,7 @@ function ScheduleBox({ location, schedules }) {
   return (
     <div className="w-full h-[400px] flex flex-col py-2 gap-1 overflow-hidden">
       <div className="w-full min-h-12 h-12 bg-[#287A2C] flex items-center justify-between pl-4 pr-2">
-        <h1 className="font-inter-bold text-lg italic">{location}</h1>
+        <h1 className="font-inter-bold text-lg italic">{location["name"]}</h1>
         <EllipsisVerticalIcon
           onClick={handleClick}
           className="w-8 cursor-pointer select-none"
@@ -155,35 +164,13 @@ function ScheduleBox({ location, schedules }) {
       <div className="flex flex-col w-full h-full p-2  gap-1 overflow-auto flex-1">
         {scheds.map((item, index) => {
           return (
-            <div
-              key={item.id}
-              className="flex flex-row text-sm font-inter-light"
-            >
-              <p className="w-1/2 uppercase">{item.area}</p>
-              <p className="w-1/4 uppercase">{item.day}</p>
-              <p className="w-1/4 flex flex-row justify-between items-center">
-                {`${format(
-                  `Tue Aug 03 2021 ${item.timeF}:00 UTC+8`,
-                  "ha"
-                )} - ${format(`Tue Aug 03 2021 ${item.timeT}:00 UTC+8`, "ha")}`}
-                {onDelete && (
-                  <span>
-                    <input
-                      type="checkbox"
-                      className=""
-                      onChange={(e) => {
-                        var temp = [...scheds];
-                        temp[index].selected = e.target.checked;
-                        setScheds(temp);
-                      }}
-                    />
-                  </span>
-                )}
-              </p>
-            </div>
+            <ScheduleForm
+              item={item}
+              onDelete={onDelete}
+              setScheds={setScheds}
+            />
           );
         })}
-
         {onAdd && (
           <form
             onSubmit={handleSubmit}
@@ -266,9 +253,13 @@ function ScheduleBox({ location, schedules }) {
           </form>
         )}
       </div>
-      {selected.length > 0 && (
+      {onDelete && (
         <div className="flex flex-row text-sm h-12 items-center justify-between mx-2 rounded-md px-2 bg-[#287A2C]">
-          <p>Delete {selected.length} items?</p>
+          <p>
+            {selected < 1
+              ? "Select an item to delete."
+              : `Delete ${selected.length} item(s)?`}
+          </p>
           <div className="flex flex-row gap-2">
             <button
               onClick={() => {
@@ -280,10 +271,11 @@ function ScheduleBox({ location, schedules }) {
               Cancel
             </button>
             <button
+              disabled={selected.length < 1}
               onClick={() => {
                 handleDelete();
               }}
-              className="bg-red-800 w-[100px] h-8 rounded-md"
+              className="bg-red-800 w-[100px] h-8 rounded-md disabled:opacity-60"
             >
               Delete
             </button>
@@ -310,7 +302,7 @@ function ScheduleBox({ location, schedules }) {
             <ListItemIcon>
               <PlusIcon className="w-4" />
             </ListItemIcon>
-            <p className="text-sm">Add</p>
+            <p className="text-sm">Add Schedule</p>
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -320,7 +312,7 @@ function ScheduleBox({ location, schedules }) {
             <ListItemIcon>
               <PencilSquareIcon className="w-4" />
             </ListItemIcon>
-            <p className="text-sm">Update</p>
+            <p className="text-sm">Update Schedule</p>
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -331,7 +323,29 @@ function ScheduleBox({ location, schedules }) {
             <ListItemIcon>
               <TrashIcon className="w-4" />
             </ListItemIcon>
-            <p className="text-sm">Delete</p>
+            <p className="text-sm">Delete Schedule</p>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              update(id, location, brgys);
+            }}
+          >
+            <ListItemIcon>
+              <PencilSquareIcon className="w-4" />
+            </ListItemIcon>
+            <p className="text-sm">Update Barangay</p>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              remove(id, location);
+            }}
+          >
+            <ListItemIcon>
+              <TrashIcon className="w-4 text-rose-600" />
+            </ListItemIcon>
+            <p className="text-sm text-rose-600">Delete Barangay</p>
           </MenuItem>
         </MenuList>
       </Menu>
