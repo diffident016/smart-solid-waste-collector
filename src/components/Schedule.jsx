@@ -16,7 +16,14 @@ import {
 } from "@heroicons/react/24/outline";
 import { show } from "../states/alerts";
 import { useDispatch } from "react-redux";
-import { addBrgy, addLocation, removeBrgy, updateBrgy } from "../api/Services";
+import {
+  addBrgy,
+  addLocation,
+  deleteLocation,
+  removeBrgy,
+  updateBrgy,
+  updateLocation,
+} from "../api/Services";
 import PopupDialog from "./PopupDialog";
 import { te } from "date-fns/locale";
 
@@ -29,6 +36,7 @@ function Schedule({ schedules, isAddSched, close, locations }) {
   const [isDeleteBrgy, setDeleteBrgy] = useState(null);
   const [isUpdateBrgy, setUpdateBrgy] = useState(null);
   const [isUpdateLocation, setUpdateLocation] = useState(null);
+  const [isDeleteLocation, setDeleteLocation] = useState(null);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -59,10 +67,53 @@ function Schedule({ schedules, isAddSched, close, locations }) {
       });
   };
 
+  const handleDeleteLocation = async () => {
+    const id = selected["id"];
+
+    if (id == "nVJqlKAUV2vfvdlFNz2Z" || id == "wqjGdPKIHwCkIAihAGRY") {
+      setSelected(null);
+
+      dispatch(
+        show({
+          type: "info",
+          message: "Oops, you cannot delete this table.",
+          duration: 3000,
+          show: true,
+        })
+      );
+
+      return;
+    }
+
+    deleteLocation(selected["id"])
+      .then((_) => {
+        setSelected(null);
+        dispatch(
+          show({
+            type: "success",
+            message: "Table has been deleted successfully.",
+            duration: 3000,
+            show: true,
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(
+          show({
+            type: "error",
+            message: "Something went wrong.",
+            duration: 3000,
+            show: true,
+          })
+        );
+      });
+  };
+
   const handleAddBrgy = async (e) => {
     e.preventDefault();
 
-    addBrgy(selected, brgy)
+    addBrgy(selected["id"], brgy)
       .then((_) => {
         setBrgy("");
         setSelected(null);
@@ -89,14 +140,42 @@ function Schedule({ schedules, isAddSched, close, locations }) {
       });
   };
 
+  const handleUpdateTable = async (e) => {
+    e.preventDefault();
+
+    updateLocation(selected["id"], location)
+      .then((_) => {
+        setLocation("");
+        setSelected(null);
+        setUpdateLocation(false);
+        dispatch(
+          show({
+            type: "success",
+            message: "Table has been updated successfully.",
+            duration: 3000,
+            show: true,
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(
+          show({
+            type: "error",
+            message: "Something went wrong.",
+            duration: 3000,
+            show: true,
+          })
+        );
+      });
+  };
+
   const handleUpdateBrgy = async (e) => {
     e.preventDefault();
 
     const index = isUpdateBrgy[2].indexOf(isUpdateBrgy[1]);
     var temp = isUpdateBrgy[2];
     var prev = temp[index];
-
-    console.log(isUpdateBrgy);
 
     temp[index] = {
       "brgy-id": prev["brgy-id"],
@@ -173,8 +252,8 @@ function Schedule({ schedules, isAddSched, close, locations }) {
           <div className=" w-full h-full grid grid-cols-2 p-2 gap-4 text-white">
             {locations["data"].map((item) => {
               let group = [];
-              if (!!schedules["group"][item["name"]]) {
-                group = schedules["group"][item["name"]].reduce(
+              if (!!schedules["group"][item["locId"]]) {
+                group = schedules["group"][item["locId"]].reduce(
                   (group, sched) => {
                     const id = sched["brgy-id"];
 
@@ -196,7 +275,7 @@ function Schedule({ schedules, isAddSched, close, locations }) {
                     <EllipsisVerticalIcon
                       onClick={(e) => {
                         setAnchorEl(e.currentTarget);
-                        setSelected(item["id"]);
+                        setSelected(item);
                       }}
                       className="w-8 cursor-pointer select-none absolute right-2"
                     />
@@ -208,7 +287,8 @@ function Schedule({ schedules, isAddSched, close, locations }) {
                           key={key["id"]}
                           id={item["id"]}
                           brgys={item["brgy"]}
-                          location={key}
+                          location={item}
+                          brgy={key}
                           schedules={group[key["brgy-id"]]}
                           select={(id) => {
                             setSelected(id);
@@ -362,9 +442,9 @@ function Schedule({ schedules, isAddSched, close, locations }) {
             </form>
           )}
         </Backdrop>
-        {/* <Backdrop
+        <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={setAnchorEl(null)}
+          open={isUpdateLocation}
         >
           {isUpdateLocation && (
             <form
@@ -372,7 +452,7 @@ function Schedule({ schedules, isAddSched, close, locations }) {
               className="w-[350px] h-[200px] bg-[#A5D8B6] rounded-lg flex flex-col p-4 text-[#2f2f2f]"
             >
               <div className="w-full flex flex-row justify-between items-center">
-                <h1 className="font-inter-bold text-lg">Add Table</h1>
+                <h1 className="font-inter-bold text-lg">Update Table</h1>
                 <div
                   onClick={() => {
                     close();
@@ -389,6 +469,7 @@ function Schedule({ schedules, isAddSched, close, locations }) {
                 <input
                   required
                   value={location}
+                  placeholder={selected["name"]}
                   onChange={(e) => {
                     setLocation(e.target.value);
                   }}
@@ -400,16 +481,16 @@ function Schedule({ schedules, isAddSched, close, locations }) {
                 type="submit"
                 className="bg-[#19AF0C] w-[150px] h-9 rounded-lg text-white mt-4 self-center text-sm"
               >
-                Add
+                Update
               </button>
             </form>
           )}
-        </Backdrop> */}
+        </Backdrop>
         <Menu
           id="basic-menu"
           anchorEl={anchorEl}
           open={open}
-          dense={true}
+          dense="true"
           onClose={() => {
             setAnchorEl(null);
           }}
@@ -429,7 +510,7 @@ function Schedule({ schedules, isAddSched, close, locations }) {
             </MenuItem>
             <MenuItem
               onClick={() => {
-                // setUpdateLocation(true)
+                setUpdateLocation(true);
                 setAnchorEl(null);
               }}
             >
@@ -441,6 +522,7 @@ function Schedule({ schedules, isAddSched, close, locations }) {
             <MenuItem
               onClick={() => {
                 setAnchorEl(null);
+                setDeleteLocation(true);
               }}
             >
               <ListItemIcon>
@@ -463,6 +545,22 @@ function Schedule({ schedules, isAddSched, close, locations }) {
           }}
           action2={() => {
             setDeleteBrgy(null);
+          }}
+        />
+
+        <PopupDialog
+          show={isDeleteLocation}
+          close={() => {
+            setDeleteLocation(false);
+          }}
+          title="Delete Table"
+          content="Are you sure you want to delete this table? All the barangay and schedules will be deleted also."
+          action1={() => {
+            handleDeleteLocation();
+            setDeleteLocation(false);
+          }}
+          action2={() => {
+            setDeleteLocation(false);
           }}
         />
       </div>

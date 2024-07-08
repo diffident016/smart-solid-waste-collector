@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import React from "react";
 
-function ScheduleForm({ item, onDelete, setScheds }) {
+function ScheduleForm({ item, onDelete, scheds, setScheds, index }) {
   return (
     <div className="flex flex-row text-sm font-inter-light">
       <p className="w-1/2 uppercase">{item.area}</p>

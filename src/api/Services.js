@@ -81,6 +81,7 @@ const addLocation = (name) => {
   return setDoc(doc(collection(db, "Locations")), {
     name: name,
     brgy: [],
+    locId: String(Date.now()).slice(5, 13),
     dateAdded: Timestamp.now(),
   });
 };
@@ -89,6 +90,16 @@ const getLocations = () => {
   const ref = collection(db, "Locations");
 
   return query(ref, orderBy("dateAdded", "asc"));
+};
+
+const deleteLocation = (id) => {
+  return deleteDoc(doc(db, "Locations", id));
+};
+
+const updateLocation = (id, location) => {
+  const ref = doc(db, "Locations", id);
+
+  return updateDoc(ref, { name: location });
 };
 
 const addBrgy = (id, brgy) => {
@@ -132,4 +143,6 @@ export {
   addBrgy,
   removeBrgy,
   updateBrgy,
+  deleteLocation,
+  updateLocation,
 };

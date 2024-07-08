@@ -97,10 +97,10 @@ function Homepage() {
         });
 
         const group = data.reduce((group, sched) => {
-          const { location } = sched;
+          const { locId } = sched;
 
-          group[location] = group[location] ?? [];
-          group[location].push(sched);
+          group[locId] = group[locId] ?? [];
+          group[locId].push(sched);
           return group;
         }, {});
 

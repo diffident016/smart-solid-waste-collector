@@ -20,6 +20,8 @@ function ScheduleBox({
   id,
   update,
   brgys,
+  brgy,
+  key,
 }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [onAdd, setAdd] = useState(false);
@@ -39,7 +41,10 @@ function ScheduleBox({
       day: "",
       timeF: "",
       timeT: "",
-      location: location,
+      brgy: brgy["name"],
+      "brgy-id": brgy["brgy-id"],
+      location: location["name"],
+      locId: location["locId"],
     }
   );
 
@@ -92,7 +97,7 @@ function ScheduleBox({
     var newForm = form;
     newForm["day"] = e.target[1].value;
 
-    await addSchedule(newForm)
+    addSchedule(newForm)
       .then((_) => {
         dispatch(
           show({
@@ -139,9 +144,12 @@ function ScheduleBox({
   };
 
   return (
-    <div className="w-full h-[400px] flex flex-col py-2 gap-1 overflow-hidden">
+    <div
+      key={key}
+      className="w-full h-[400px] flex flex-col py-2 gap-1 overflow-hidden"
+    >
       <div className="w-full min-h-12 h-12 bg-[#287A2C] flex items-center justify-between pl-4 pr-2">
-        <h1 className="font-inter-bold text-lg italic">{location["name"]}</h1>
+        <h1 className="font-inter-bold text-lg italic">{brgy["name"]}</h1>
         <EllipsisVerticalIcon
           onClick={handleClick}
           className="w-8 cursor-pointer select-none"
@@ -166,8 +174,12 @@ function ScheduleBox({
           return (
             <ScheduleForm
               item={item}
+              index={index}
               onDelete={onDelete}
-              setScheds={setScheds}
+              scheds={scheds}
+              setScheds={(temp) => {
+                setScheds(temp);
+              }}
             />
           );
         })}
@@ -256,7 +268,7 @@ function ScheduleBox({
       {onDelete && (
         <div className="flex flex-row text-sm h-12 items-center justify-between mx-2 rounded-md px-2 bg-[#287A2C]">
           <p>
-            {selected < 1
+            {selected.length < 1
               ? "Select an item to delete."
               : `Delete ${selected.length} item(s)?`}
           </p>
@@ -286,7 +298,7 @@ function ScheduleBox({
         id="basic-menu"
         anchorEl={anchorEl}
         open={open}
-        dense={true}
+        dense="true"
         onClose={() => {
           setAnchorEl(null);
         }}
@@ -328,7 +340,7 @@ function ScheduleBox({
           <MenuItem
             onClick={() => {
               setAnchorEl(null);
-              update(id, location, brgys);
+              update(id, brgy, brgys);
             }}
           >
             <ListItemIcon>
@@ -339,7 +351,7 @@ function ScheduleBox({
           <MenuItem
             onClick={() => {
               setAnchorEl(null);
-              remove(id, location);
+              remove(id, brgy);
             }}
           >
             <ListItemIcon>
