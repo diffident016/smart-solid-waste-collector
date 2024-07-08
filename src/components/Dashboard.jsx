@@ -65,7 +65,21 @@ function Dashboard() {
 
       truck.current.map((item) => {
         try {
-          points.push(item.split(",").map((i) => parseFloat(i.trim())));
+          const latlng = item.split(",").map((i) => i.trim());
+
+          if (latlng.length != 2) return;
+
+          const reg = new RegExp(
+            "^-?([0-9]{1,2}|1[0-7][0-9]|180)(.[0-9]{1,10})$"
+          );
+
+          if (reg.exec(latlng[0]) && reg.exec(latlng[1])) {
+            points.push([
+              parseFloat(latlng[0].trim()),
+              parseFloat(latlng[1].trim()),
+            ]);
+          }
+          // points.push(item.split(",").map((i) => parseFloat(i.trim())));
         } catch {
           return;
         }
@@ -103,10 +117,11 @@ function Dashboard() {
       if (snapshot.exists()) {
         const trucks = Object.keys(data).map((key) => data[key]);
 
+        if (!("current" in trucks)) return;
+
         setTrucks({
           fetchState: 1,
           trucks: trucks,
-          count: trucks.length,
         });
 
         return;
