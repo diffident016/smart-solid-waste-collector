@@ -117,7 +117,14 @@ function Dashboard() {
       if (snapshot.exists()) {
         const trucks = Object.keys(data).map((key) => data[key]);
 
-        if (!("current" in trucks[0])) return;
+        if (!("current" in trucks[0])) {
+          setTrucks({
+            fetchState: 2,
+            trucks: [],
+          });
+
+          return;
+        }
 
         setTrucks({
           fetchState: 1,
