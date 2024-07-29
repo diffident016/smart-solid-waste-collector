@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from "react";
 import TrackerMap from "./TrackerMap";
 import { rdb } from "../../firebase";
-import { onValue, ref } from "firebase/database";
+import { onValue, ref, onChildAdded } from "firebase/database";
 import "leaflet/dist/images/marker-shadow.png";
 import L from "leaflet";
 import "leaflet-routing-machine";
@@ -58,13 +58,17 @@ function Dashboard() {
         setMarker([]);
       }
 
-      const current = truck.current[truck.current.length - 1]
-        .split(",")
-        .map((i) => parseFloat(i.trim()));
-      var points = [];
+      if (truck.current.length < 1) {
+        return;
+      }
 
-      truck.current.map((item) => {
-        try {
+      try {
+        const current = truck.current[truck.current.length - 1]
+          .split(",")
+          .map((i) => parseFloat(i.trim()));
+        var points = [];
+
+        truck.current.map((item) => {
           const latlng = item.split(",").map((i) => i.trim());
 
           if (latlng.length != 2) return;
@@ -80,27 +84,27 @@ function Dashboard() {
             ]);
           }
           // points.push(item.split(",").map((i) => parseFloat(i.trim())));
-        } catch {
-          return;
-        }
-      });
+        });
 
-      map.flyTo(current, 18);
+        map.flyTo(current, 18);
 
-      const temp = L.polyline(points, {
-        color: "red",
-        weight: 5,
-        opacity: 0.6,
-        smoothFactor: 1,
-      });
+        const temp = L.polyline(points, {
+          color: "red",
+          weight: 5,
+          opacity: 0.6,
+          smoothFactor: 1,
+        });
 
-      const tempM = [points[points.length - 1]].map((item) =>
-        L.marker(item, { icon: iconDefault }).addTo(map)
-      );
+        const tempM = [points[points.length - 1]].map((item) =>
+          L.marker(item, { icon: iconDefault }).addTo(map)
+        );
 
-      temp.addTo(map);
-      setMarker(tempM);
-      setRoute(temp);
+        temp.addTo(map);
+        setMarker(tempM);
+        setRoute(temp);
+      } catch {
+        return;
+      }
     }
   };
 
