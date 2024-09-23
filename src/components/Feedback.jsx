@@ -32,19 +32,19 @@ function Feedback({ feedbacks }) {
       width: "250px",
     },
     {
-      name: "Feedback",
-      cell: (row) => <p className="text-sm">{row.Feedback}</p>,
+      name: "Location",
+      cell: (row) => <p className="text-sm">{row.location}</p>,
       width: "350px",
     },
     {
-      name: "",
+      name: "Feedback",
       cell: (row) => (
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-4 text-white text-center">
           <p
             onClick={() => {
               setPreview(row);
             }}
-            className="text-xs underline cursor-pointer hover:text-blue-800"
+            className="text-xs cursor-pointer p-2 bg-[#19AF0C] w-14 rounded-md"
           >
             View
           </p>
@@ -52,13 +52,13 @@ function Feedback({ feedbacks }) {
             onClick={() => {
               setDelete(row);
             }}
-            className="text-xs underline cursor-pointer hover:text-blue-800"
+            className="text-xs cursor-pointer p-2 bg-red-800 w-14 rounded-md"
           >
             Delete
           </p>
         </div>
       ),
-      width: "120px",
+      width: "200px",
     },
   ]);
 
