@@ -83,6 +83,19 @@ function Dashboard() {
               parseFloat(latlng[1].trim()),
             ]);
           }
+
+          if (points.length > 0) {
+            let currentPoint = points[0];
+            points = points.filter((p) => {
+              if (getDistance(currentPoint, p) <= 500) {
+                currentPoint = p;
+                return true;
+              }
+
+              return false;
+            });
+          }
+
           // points.push(item.split(",").map((i) => parseFloat(i.trim())));
         });
 
@@ -143,6 +156,20 @@ function Dashboard() {
       });
     });
   }, []);
+
+  function getDistance(currentPoint, point) {
+    const R = 6371e3;
+    const p1 = (currentPoint[0] * Math.PI) / 180;
+    const p2 = (point[0] * Math.PI) / 180;
+    const deltaLon = point[1] - currentPoint[1];
+    const deltaLambda = (deltaLon * Math.PI) / 180;
+    const d =
+      Math.acos(
+        Math.sin(p1) * Math.sin(p2) +
+          Math.cos(p1) * Math.cos(p2) * Math.cos(deltaLambda)
+      ) * R;
+    return d;
+  }
 
   return (
     <div className="w-full h-full rounded-lg">

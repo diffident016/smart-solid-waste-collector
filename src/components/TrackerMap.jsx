@@ -47,6 +47,10 @@ function TrackerMap({ map, setMap, trucks, track }) {
           </h1>
         </div>
       )}
+      <div className="absolute z-10 flex flex-row bottom-8 left-4 gap-4 ">
+        <button className="w-20 bg-[#19AF0C]/90 rounded-lg p-2">Save</button>
+        <button className="w-20 bg-red-800/90 rounded-lg p-2">Reset</button>
+      </div>
       <button
         onClick={() => {
           track();
