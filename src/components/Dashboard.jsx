@@ -9,6 +9,7 @@ import "leaflet-routing-machine";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
+import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
 
 const iconDefault = L.icon({
   iconRetinaUrl,
@@ -25,6 +26,7 @@ function Dashboard() {
   const [map, setMap] = useState(null);
   const [route, setRoute] = useState(null);
   const [marker, setMarker] = useState([]);
+  const [screenshotter, setScreenshotter] = useState(null);
 
   const [trucks, setTrucks] = useReducer(
     (prev, next) => {
@@ -40,6 +42,14 @@ function Dashboard() {
   // useEffect(() => {
   //   if (!map) return;
   // }, []);
+
+  const snapshotOptions = {
+    hideElementsWithSelectors: [
+      ".leaflet-control-container",
+      "#snapshot-button",
+    ],
+    hidden: true,
+  };
 
   const trackGarbageTruck = () => {
     if (trucks["fetchState"] == 1) {
@@ -118,6 +128,8 @@ function Dashboard() {
       } catch {
         return;
       }
+
+      setScreenshotter(L.simpleMapScreenshoter(snapshotOptions).addTo(map));
     }
   };
 
@@ -180,6 +192,7 @@ function Dashboard() {
         track={() => {
           trackGarbageTruck();
         }}
+        screenshotter={screenshotter}
       />
     </div>
   );

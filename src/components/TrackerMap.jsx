@@ -11,11 +11,13 @@ import {
 import "leaflet/dist/leaflet.css";
 import { GpsFixed } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
+import html2canvas from "html2canvas";
 
-function TrackerMap({ map, setMap, trucks, track }) {
+function TrackerMap({ map, setMap, trucks, track, screenshotter }) {
   const initialMap = useMemo(
     () => (
       <MapContainer
+        id="map-container"
         ref={setMap}
         className="h-full z-0"
         center={[8.054375, 125.195331]}
@@ -37,6 +39,50 @@ function TrackerMap({ map, setMap, trucks, track }) {
     []
   );
 
+  const takeScreenShot = () => {
+    screenshotter.takeScreen("image").then((image) => {
+      var img = new Image();
+      var imageSize = { x: 1080, y: 1080 };
+      var topLeft = { x: 0, y: 0 };
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = imageSize.x;
+        canvas.height = imageSize.y;
+
+        ctx.drawImage(
+          img,
+          topLeft.x,
+          topLeft.y,
+          imageSize.x,
+          imageSize.y,
+          0,
+          0,
+          imageSize.x,
+          imageSize.y
+        );
+
+        var imageurl = canvas.toDataURL("image/png");
+
+        const resultantImage = new Image();
+        resultantImage.style = "border: 1px solid black";
+        resultantImage.src = imageurl;
+
+        document.body.appendChild(canvas);
+
+        canvas.toBlob(function (blob) {
+          saveAs(blob, "map_screenshot.png");
+        });
+      };
+
+      // set the image source to what the snapshotter captured
+      // img.onload will fire AFTER this
+      img.src = image;
+    });
+  };
+
   return (
     <div className="relative w-full h-full overflow-hidden rounded-lg">
       {trucks.fetchState == 0 && (
@@ -48,7 +94,14 @@ function TrackerMap({ map, setMap, trucks, track }) {
         </div>
       )}
       <div className="absolute z-10 flex flex-row bottom-8 left-4 gap-4 ">
-        <button className="w-20 bg-[#19AF0C]/90 rounded-lg p-2">Save</button>
+        <button
+          className="w-20 bg-[#19AF0C]/90 rounded-lg p-2"
+          onClick={() => {
+            takeScreenShot();
+          }}
+        >
+          Save
+        </button>
         <button className="w-20 bg-red-800/90 rounded-lg p-2">Reset</button>
       </div>
       <button
