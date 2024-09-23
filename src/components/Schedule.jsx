@@ -284,7 +284,6 @@ function Schedule({ schedules, isAddSched, close, locations }) {
                     {item["brgy"].map((key) => {
                       return (
                         <ScheduleBox
-                          key={key["id"]}
                           id={item["id"]}
                           brgys={item["brgy"]}
                           location={item}

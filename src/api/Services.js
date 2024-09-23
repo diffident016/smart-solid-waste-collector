@@ -126,6 +126,12 @@ const updateBrgy = (id, brgy) => {
   return updateDoc(ref, { brgy: brgy });
 };
 
+const updateSchedule = (id, schedule) => {
+  const ref = doc(db, "Schedules", id);
+
+  return updateDoc(ref, schedule);
+};
+
 export {
   getUser,
   addAnnouncement,
@@ -145,4 +151,5 @@ export {
   updateBrgy,
   deleteLocation,
   updateLocation,
+  updateSchedule,
 };

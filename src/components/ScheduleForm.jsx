@@ -1,7 +1,15 @@
 import { format } from "date-fns";
 import React from "react";
 
-function ScheduleForm({ item, onDelete, scheds, setScheds, index }) {
+function ScheduleForm({
+  item,
+  onDelete,
+  scheds,
+  setScheds,
+  index,
+  onUpdate,
+  selected,
+}) {
   return (
     <div className="flex flex-row text-sm font-inter-light">
       <p className="w-1/2 uppercase">{item.area}</p>
@@ -11,11 +19,12 @@ function ScheduleForm({ item, onDelete, scheds, setScheds, index }) {
           `Tue Aug 03 2021 ${item.timeT}:00 UTC+8`,
           "ha"
         )}`}
-        {onDelete && (
+        {(onDelete || onUpdate) && (
           <span>
             <input
               type="checkbox"
               className=""
+              disabled={onDelete ? false : selected.length > 0}
               onChange={(e) => {
                 var temp = [...scheds];
                 temp[index].selected = e.target.checked;

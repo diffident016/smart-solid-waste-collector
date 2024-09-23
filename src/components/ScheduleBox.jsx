@@ -11,6 +11,7 @@ import { show } from "../states/alerts";
 import { useDispatch } from "react-redux";
 import { format } from "date-fns-tz";
 import ScheduleForm from "./ScheduleForm";
+import UpdateScheduleForm from "./UpdateScheduleForm";
 
 function ScheduleBox({
   location,
@@ -28,6 +29,7 @@ function ScheduleBox({
   const [onDelete, setDelete] = useState(false);
   const [selected, setSelected] = useState([]);
   const [scheds, setScheds] = useState([]);
+  const [onUpdate, setUpdate] = useState(false);
   const open = Boolean(anchorEl);
 
   const dispatch = useDispatch();
@@ -172,15 +174,31 @@ function ScheduleBox({
       <div className="flex flex-col w-full h-full p-2  gap-1 overflow-auto flex-1">
         {scheds.map((item, index) => {
           return (
-            <ScheduleForm
-              item={item}
-              index={index}
-              onDelete={onDelete}
-              scheds={scheds}
-              setScheds={(temp) => {
-                setScheds(temp);
-              }}
-            />
+            <>
+              {onUpdate && selected.includes(item.id) ? (
+                <UpdateScheduleForm
+                  brgy={brgy}
+                  location={location}
+                  item={item}
+                  onClose={() => {
+                    setSelected([]);
+                  }}
+                />
+              ) : (
+                <ScheduleForm
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  onDelete={onDelete}
+                  scheds={scheds}
+                  setScheds={(temp) => {
+                    setScheds(temp);
+                  }}
+                  onUpdate={onUpdate}
+                  selected={selected}
+                />
+              )}
+            </>
           );
         })}
         {onAdd && (
@@ -294,6 +312,22 @@ function ScheduleBox({
           </div>
         </div>
       )}
+      {onUpdate && (
+        <div className="flex flex-row text-sm h-12 items-center justify-between mx-2 rounded-md px-2 bg-[#287A2C]">
+          <p>Select an item to update.</p>
+          <div className="flex flex-row gap-2">
+            <button
+              onClick={() => {
+                setUpdate(false);
+                setSelected([]);
+              }}
+              className="bg-[#19AF0C] w-[100px] h-8 rounded-md"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}
@@ -309,6 +343,8 @@ function ScheduleBox({
             onClick={() => {
               setAnchorEl(null);
               setAdd(true);
+              setDelete(false);
+              setUpdate(false);
             }}
           >
             <ListItemIcon>
@@ -318,7 +354,10 @@ function ScheduleBox({
           </MenuItem>
           <MenuItem
             onClick={() => {
-              // signout();
+              setAnchorEl(null);
+              setUpdate(true);
+              setAdd(false);
+              setDelete(false);
             }}
           >
             <ListItemIcon>
@@ -330,6 +369,8 @@ function ScheduleBox({
             onClick={() => {
               setAnchorEl(null);
               setDelete(true);
+              setUpdate(false);
+              setAdd(false);
             }}
           >
             <ListItemIcon>
@@ -341,6 +382,9 @@ function ScheduleBox({
             onClick={() => {
               setAnchorEl(null);
               update(id, brgy, brgys);
+              setDelete(false);
+              setAdd(false);
+              setUpdate(false);
             }}
           >
             <ListItemIcon>
@@ -352,6 +396,9 @@ function ScheduleBox({
             onClick={() => {
               setAnchorEl(null);
               remove(id, brgy);
+              setAdd(false);
+              setDelete(false);
+              setUpdate(false);
             }}
           >
             <ListItemIcon>
