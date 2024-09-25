@@ -122,7 +122,7 @@ function Dashboard() {
           // points.push(item.split(",").map((i) => parseFloat(i.trim())));
         });
 
-        map.flyTo(current, 18);
+        map.flyTo(current, 17);
 
         const temp = L.polyline(points, {
           color: "red",
@@ -270,7 +270,7 @@ function Dashboard() {
           setMarker([]);
         }
 
-        map.flyTo([8.054375, 125.195331], 13);
+        map.flyTo([8.054375, 125.195331], 14);
       })
       .catch((err) => {
         show({

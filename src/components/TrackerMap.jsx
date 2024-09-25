@@ -42,7 +42,7 @@ function TrackerMap({ map, setMap, trucks, track, screenshotter, onReset }) {
     screenshotter.takeScreen("image").then((image) => {
       var img = new Image();
       var imageSize = { x: 1080, y: 1080 };
-      var topLeft = { x: 0, y: 0 };
+      var topLeft = { x: 100, y: 100 };
 
       img.onload = () => {
         const canvas = document.createElement("canvas");
