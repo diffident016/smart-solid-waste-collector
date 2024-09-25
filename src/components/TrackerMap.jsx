@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -11,9 +11,8 @@ import {
 import "leaflet/dist/leaflet.css";
 import { GpsFixed } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
-import html2canvas from "html2canvas";
 
-function TrackerMap({ map, setMap, trucks, track, screenshotter }) {
+function TrackerMap({ map, setMap, trucks, track, screenshotter, onReset }) {
   const initialMap = useMemo(
     () => (
       <MapContainer
@@ -77,8 +76,6 @@ function TrackerMap({ map, setMap, trucks, track, screenshotter }) {
         });
       };
 
-      // set the image source to what the snapshotter captured
-      // img.onload will fire AFTER this
       img.src = image;
     });
   };
@@ -95,14 +92,23 @@ function TrackerMap({ map, setMap, trucks, track, screenshotter }) {
       )}
       <div className="absolute z-10 flex flex-row bottom-8 left-4 gap-4 ">
         <button
-          className="w-20 bg-[#19AF0C]/90 rounded-lg p-2"
+          disabled={trucks.fetchState === 2}
+          className="w-20 bg-[#19AF0C]/90 rounded-lg p-2 disabled:bg-[#19AF0C]/70"
           onClick={() => {
             takeScreenShot();
           }}
         >
           Save
         </button>
-        <button className="w-20 bg-red-800/90 rounded-lg p-2">Reset</button>
+        <button
+          disabled={trucks.fetchState === 2}
+          className="w-20 bg-red-800/90 rounded-lg p-2 disabled:bg-red-800/70"
+          onClick={() => {
+            onReset();
+          }}
+        >
+          Reset
+        </button>
       </div>
       <button
         onClick={() => {

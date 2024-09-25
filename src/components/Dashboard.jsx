@@ -1,7 +1,14 @@
 import React, { useEffect, useReducer, useState } from "react";
 import TrackerMap from "./TrackerMap";
 import { rdb } from "../../firebase";
-import { onValue, ref, onChildAdded } from "firebase/database";
+import {
+  onValue,
+  ref,
+  onChildAdded,
+  update,
+  onChildRemoved,
+  get,
+} from "firebase/database";
 import "leaflet/dist/images/marker-shadow.png";
 import L from "leaflet";
 import "leaflet-routing-machine";
@@ -10,6 +17,9 @@ import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import iconUrl from "leaflet/dist/images/marker-icon.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 import { SimpleMapScreenshoter } from "leaflet-simple-map-screenshoter";
+import PopupDialog from "./PopupDialog";
+import { show } from "../states/alerts";
+import { useDispatch } from "react-redux";
 
 const iconDefault = L.icon({
   iconRetinaUrl,
@@ -27,6 +37,9 @@ function Dashboard() {
   const [route, setRoute] = useState(null);
   const [marker, setMarker] = useState([]);
   const [screenshotter, setScreenshotter] = useState(null);
+  const [onReset, setReset] = useState(false);
+
+  const dispatch = useDispatch();
 
   const [trucks, setTrucks] = useReducer(
     (prev, next) => {
@@ -125,7 +138,8 @@ function Dashboard() {
         temp.addTo(map);
         setMarker(tempM);
         setRoute(temp);
-      } catch {
+      } catch (err) {
+        console.log(err);
         return;
       }
 
@@ -140,7 +154,8 @@ function Dashboard() {
 
   useEffect(() => {
     const query = ref(rdb, "/NODES");
-    return onValue(query, (snapshot) => {
+
+    get(query).then((snapshot) => {
       const data = snapshot.val();
 
       if (snapshot.exists()) {
@@ -169,6 +184,51 @@ function Dashboard() {
     });
   }, []);
 
+  useEffect(() => {
+    const query = ref(rdb, "/NODES");
+
+    return onValue(query, (snapshot) => {
+      const data = snapshot.val();
+
+      if (!data) return;
+
+      if (snapshot.exists()) {
+        const trucks = Object.keys(data).map((key) => data[key]);
+
+        if (!("current" in trucks[0])) {
+          setTrucks({
+            fetchState: 2,
+            trucks: [],
+          });
+
+          return;
+        }
+
+        setTrucks({
+          fetchState: 1,
+          trucks: trucks,
+        });
+
+        return;
+      }
+
+      setTrucks({
+        fetchState: 2,
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    const query = ref(rdb, "/NODES/Truck-01");
+
+    onChildRemoved(query, (snapshot) => {
+      setTrucks({
+        fetchState: 2,
+        trucks: [],
+      });
+    });
+  }, []);
+
   function getDistance(currentPoint, point) {
     const R = 6371e3;
     const p1 = (currentPoint[0] * Math.PI) / 180;
@@ -183,6 +243,45 @@ function Dashboard() {
     return d;
   }
 
+  const handleReset = () => {
+    const truckRef = ref(rdb, "/NODES/Truck-01");
+
+    update(truckRef, { initial: [], current: [] })
+      .then((val) => {
+        dispatch(
+          show({
+            type: "success",
+            message: "The garbage truck map has been reset.",
+            duration: 3000,
+            show: true,
+          })
+        );
+
+        if (route) {
+          map.removeControl(route);
+          setRoute(null);
+        }
+
+        if (marker.length > 0) {
+          marker.map((item) => {
+            map.removeLayer(item);
+          });
+
+          setMarker([]);
+        }
+
+        map.flyTo([8.054375, 125.195331], 13);
+      })
+      .catch((err) => {
+        show({
+          type: "error",
+          message: "Something went wrong.",
+          duration: 3000,
+          show: true,
+        });
+      });
+  };
+
   return (
     <div className="w-full h-full rounded-lg">
       <TrackerMap
@@ -193,6 +292,24 @@ function Dashboard() {
           trackGarbageTruck();
         }}
         screenshotter={screenshotter}
+        onReset={() => {
+          setReset(true);
+        }}
+      />
+      <PopupDialog
+        show={onReset}
+        close={() => {
+          setReset(false);
+        }}
+        title="Reset Tracker"
+        content="Are you sure you want to reset tracker?"
+        action1={() => {
+          handleReset();
+          setReset(false);
+        }}
+        action2={() => {
+          setReset(false);
+        }}
       />
     </div>
   );
