@@ -454,7 +454,7 @@ function Schedule({ schedules, isAddSched, close, locations }) {
                 <h1 className="font-inter-bold text-lg">Update Table</h1>
                 <div
                   onClick={() => {
-                    close();
+                    setUpdateLocation(null);
                   }}
                   className="p-[2px] bg-red-800 rounded-full cursor-pointer"
                 >
