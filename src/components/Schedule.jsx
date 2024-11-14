@@ -113,6 +113,22 @@ function Schedule({ schedules, isAddSched, close, locations }) {
   const handleAddBrgy = async (e) => {
     e.preventDefault();
 
+    const allBrgy = locations["data"]
+      .map((location) => location.brgy.map((br) => br.name.toLowerCase()))
+      .flat();
+
+    if (allBrgy.includes(brgy.trim().toLowerCase())) {
+      dispatch(
+        show({
+          type: "error",
+          message: "This barangay was already exists in the schedule.",
+          duration: 3000,
+          show: true,
+        })
+      );
+      return;
+    }
+
     addBrgy(selected["id"], brgy)
       .then((_) => {
         setBrgy("");
