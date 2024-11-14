@@ -281,7 +281,7 @@ function Homepage() {
       </div>
       {alert.show && (
         <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
           open={alert.show}
           autoHideDuration={alert.duration}
           onClose={() => {
