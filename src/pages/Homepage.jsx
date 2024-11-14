@@ -217,7 +217,7 @@ function Homepage() {
         });
 
         setLocations({
-          fetchState: 1,
+          fetchState: 2,
           data: data,
         });
       });

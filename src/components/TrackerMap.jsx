@@ -11,6 +11,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import { GpsFixed } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
+import logo from "../assets/images/logo.png";
 
 function TrackerMap({ map, setMap, trucks, track, screenshotter, onReset }) {
   const initialMap = useMemo(
@@ -86,13 +87,29 @@ function TrackerMap({ map, setMap, trucks, track, screenshotter, onReset }) {
         <div className="w-full h-full absolute bg-white/20 text-[#2f2f2f] z-10 gap-2 flex flex-col items-center justify-center">
           <CircularProgress color="inherit" size={"32px"} />
           <h1 className="font-arimo font-bold text-sm">
-            Loading, please wait...
+            Fetching data, please wait...
           </h1>
+        </div>
+      )}
+      {trucks.fetchState == 2 && (
+        <div className="w-full h-full absolute bg-white/20 text-[#2f2f2f] z-10 gap-2 flex flex-col items-center justify-center">
+          <div className="w-[350px] h-[260px] bg-white rounded-lg flex flex-col p-4">
+            <h1 className="font-bold text-lg">Garbage Truck Not in Range</h1>
+            <img
+              className="w-[150px] h-[100px] self-center mt-6"
+              src={logo}
+              alt="truck"
+            />
+            <div className="flex flex-row items-center justify-center mt-6 gap-4">
+              <CircularProgress color="inherit" size={"24px"} />
+              <h1 className="font-arimo font-bold text-sm">Loading...</h1>
+            </div>
+          </div>
         </div>
       )}
       <div className="absolute z-10 flex flex-row bottom-8 left-4 gap-4 ">
         <button
-          disabled={trucks.fetchState === 2}
+          disabled={trucks.fetchState !== 1}
           className="w-20 bg-[#19AF0C]/90 rounded-lg p-2 disabled:bg-[#19AF0C]/70"
           onClick={() => {
             takeScreenShot();
@@ -101,7 +118,7 @@ function TrackerMap({ map, setMap, trucks, track, screenshotter, onReset }) {
           Save
         </button>
         <button
-          disabled={trucks.fetchState === 2}
+          disabled={trucks.fetchState !== 1}
           className="w-20 bg-red-800/90 rounded-lg p-2 disabled:bg-red-800/70"
           onClick={() => {
             onReset();
