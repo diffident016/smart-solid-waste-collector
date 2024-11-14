@@ -17,7 +17,7 @@ function FeedbackPreview({ feedback, close }) {
           <XMarkIcon className="w-4 h-4 text-white" />
         </div>
       </div>
-      <p className="text-sm py-4">{feedback["Feedback"]}</p>
+      <p className="text-sm py-4 truncate text-wrap">{feedback["Feedback"]}</p>
       {feedback["Images"] && (
         <div className="flex flex-row gap-2 pb-2">
           {feedback["Images"].map((item) => {

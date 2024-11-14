@@ -24,17 +24,20 @@ function Feedback({ feedbacks }) {
     {
       name: "Name",
       cell: (row) => <p className="text-sm">{row.Name}</p>,
-      width: "250px",
+      width: "350px",
     },
     {
       name: "Email",
-      selector: (row) => row.Email,
-      width: "250px",
+      selector: (row) => (row.Email === "" ? "N/A" : row.Email),
+      width: "350px",
     },
     {
       name: "Location",
-      cell: (row) => <p className="text-sm">{row.location}</p>,
-      width: "350px",
+      cell: (row) => (
+        <p className="text-sm">{row.location === "" ? "N/A" : row.location}</p>
+      ),
+      // width: "50%",
+      wrap: true,
     },
     {
       name: "Feedback",
