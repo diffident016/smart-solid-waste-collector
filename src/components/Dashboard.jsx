@@ -32,6 +32,19 @@ const iconDefault = L.icon({
   shadowSize: [41, 41],
 });
 
+const iconGreen = L.icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
+  iconRetinaUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+  shadowUrl,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41],
+});
+
 function Dashboard() {
   const [map, setMap] = useState(null);
   const [route, setRoute] = useState(null);
@@ -131,12 +144,32 @@ function Dashboard() {
           smoothFactor: 1,
         });
 
-        const tempM = [points[points.length - 1]].map((item) =>
-          L.marker(item, { icon: iconDefault }).addTo(map)
-        );
+        const tempM = [points[points.length - 1]].map((item) => {
+          const marker = L.marker(item, { icon: iconGreen }).addTo(map);
+
+          marker.bindTooltip("Truck 1", {
+            permanent: true,
+            direction: "top",
+            offset: L.point(-15, -15),
+          });
+          return marker;
+        });
+
+        const tempM2 = [points[0]].map((item) => {
+          const marker = L.marker(item, { icon: iconDefault }).addTo(map);
+
+          // marker.bindTooltip("Truck 1 - Start", {
+          //   permanent: true,
+          //   direction: "top",
+          //   offset: L.point(-15, -15),
+          // });
+
+          return marker;
+        });
 
         temp.addTo(map);
         setMarker(tempM);
+        setMarker(tempM2);
         setRoute(temp);
       } catch (err) {
         console.log(err);
