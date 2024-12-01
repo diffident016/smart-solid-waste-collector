@@ -107,31 +107,36 @@ function TrackerMap({ map, setMap, trucks, track, screenshotter, onReset }) {
           </div>
         </div>
       )}
-      <div className="absolute z-10 flex flex-row bottom-8 left-4 gap-4 ">
-        <button
-          disabled={trucks.fetchState !== 1}
-          className="w-20 bg-[#19AF0C]/90 rounded-lg p-2 disabled:bg-[#19AF0C]/70"
-          onClick={() => {
-            takeScreenShot();
-          }}
-        >
-          Save
-        </button>
-        <button
-          disabled={trucks.fetchState !== 1}
-          className="w-20 bg-red-800/90 rounded-lg p-2 disabled:bg-red-800/70"
-          onClick={() => {
-            onReset();
-          }}
-        >
-          Reset
-        </button>
-      </div>
+      {trucks.fetchState != 2 && (
+        <div className="absolute z-10 flex flex-row bottom-8 left-4 gap-4 ">
+          <button
+            disabled={trucks.fetchState !== 1}
+            title="Take screenshot"
+            className="w-20 bg-[#19AF0C]/80 rounded-lg p-2 disabled:bg-[#19AF0C]/70 hover:bg-[#40af0c]"
+            onClick={() => {
+              takeScreenShot();
+            }}
+          >
+            Save
+          </button>
+          <button
+            disabled={trucks.fetchState !== 1}
+            title="Reset map"
+            className="w-20 bg-red-800/80 rounded-lg p-2 disabled:bg-red-800/70 hover:bg-red-900"
+            onClick={() => {
+              onReset();
+            }}
+          >
+            Reset
+          </button>
+        </div>
+      )}
       <button
         onClick={() => {
           track();
         }}
-        className="absolute z-10 w-[200px] flex flex-row items-center h-11 bg-[#19AF0C]/90 bottom-8 right-4 rounded-lg justify-center gap-2"
+        title="Track garbage truck"
+        className="absolute z-10 w-[200px] flex flex-row items-center h-11 bg-[#19AF0C]/90 bottom-8 right-4 rounded-lg justify-center gap-2 hover:bg-[#19AF0C]"
       >
         <GpsFixed fontSize="small" />
         <p className="text-sm font-inter-bold">Track Garbage Truck</p>

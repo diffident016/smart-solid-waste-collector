@@ -47,7 +47,7 @@ function Login() {
       </div>
       <div className="w-[60%] h-full flex flex-col items-center gap-8 py-10 justify-center">
         <h1 className="font-inter-bold italic text-3xl w-60 text-center">
-          Smart Solid Waste Collector
+          Smart Solid Waste Collection
         </h1>
         <div className="w-[400px] h-[400px] ">
           <form

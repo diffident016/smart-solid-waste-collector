@@ -12,7 +12,7 @@ function ScheduleForm({
 }) {
   return (
     <div className="flex flex-row text-sm font-inter-light">
-      <p className="w-1/2 uppercase">{item.area}</p>
+      <p className="w-1/2 uppercase mr-2">{item.area}</p>
       <p className="w-1/4 uppercase">{item.day}</p>
       <p className="w-1/4 flex flex-row justify-between items-center">
         {`${format(`Tue Aug 03 2021 ${item.timeF}:00 UTC+8`, "ha")} - ${format(

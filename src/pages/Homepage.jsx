@@ -12,7 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Navbar from "../components/Navbar";
 import { useDispatch, useSelector } from "react-redux";
-import { hide } from "../states/alerts";
+import { hide, show } from "../states/alerts";
 import { Alert, Snackbar } from "@mui/material";
 import {
   getAnnouncements,
@@ -21,6 +21,7 @@ import {
   getSchedules,
   onSnapshot,
 } from "../api/Services";
+import { differenceInSeconds } from "date-fns";
 
 function Homepage() {
   const [screen, setScreen] = useState(0);
@@ -177,6 +178,17 @@ function Homepage() {
           var temp = doc.data();
           temp["no"] = index + 1;
           temp["id"] = doc.id;
+
+          if (differenceInSeconds(new Date(), temp["postedAt"].toDate()) <= 5) {
+            dispatch(
+              show({
+                type: "info",
+                message: "New feedback has been posted.",
+                duration: 5000,
+                show: true,
+              })
+            );
+          }
 
           return temp;
         });

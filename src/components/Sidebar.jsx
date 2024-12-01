@@ -18,8 +18,8 @@ function Sidebar({ screens, screen, setScreen }) {
       <div className="flex flex-col h-full w-full">
         <div className="flex h-20 items-center px-2 gap-2 select-none">
           <img src={logo} className="w-20 cursor-pointer" />
-          <h1 className="cursor-pointer font-inter-bold text-xl italic w-40 text-center">
-            Smart Solid Waste Collector
+          <h1 className="cursor-pointer font-inter-bold text-lg italic w-40 text-center">
+            Smart Solid Waste Collection
           </h1>
         </div>
         <div className="flex flex-col w-full flex-1 mt-2 p-4 font-lato gap-2">

@@ -164,7 +164,7 @@ function ScheduleBox({
               key={index}
               className={`${
                 index == 0 ? "w-1/2" : "w-1/4"
-              } text-sm uppercase font-inter`}
+              } text-sm uppercase font-inter ml-2`}
             >
               {item.name}
             </p>

@@ -32,11 +32,11 @@ const iconDefault = L.icon({
   shadowSize: [41, 41],
 });
 
-const iconGreen = L.icon({
+const iconRed = L.icon({
   iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png",
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
   iconRetinaUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
   shadowUrl,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -145,7 +145,7 @@ function Dashboard() {
         });
 
         const tempM = [points[points.length - 1]].map((item) => {
-          const marker = L.marker(item, { icon: iconGreen }).addTo(map);
+          const marker = L.marker(item, { icon: iconRed }).addTo(map);
 
           marker.bindTooltip("Truck 1", {
             permanent: true,
@@ -156,7 +156,7 @@ function Dashboard() {
         });
 
         const tempM2 = [points[0]].map((item) => {
-          const marker = L.marker(item, { icon: iconDefault }).addTo(map);
+          const marker = L.marker(item, { icon: iconRed }).addTo(map);
 
           // marker.bindTooltip("Truck 1 - Start", {
           //   permanent: true,
@@ -195,10 +195,17 @@ function Dashboard() {
         const trucks = Object.keys(data).map((key) => data[key]);
 
         if (!("current" in trucks[0])) {
-          setTrucks({
-            fetchState: 2,
-            trucks: [],
-          });
+          if (timer) {
+            clearTimeout(timer);
+            timer = null;
+          }
+
+          timer = setTimeout(() => {
+            setTrucks({
+              fetchState: 2,
+              trucks: [],
+            });
+          }, 5000);
 
           return;
         }
@@ -217,6 +224,8 @@ function Dashboard() {
     });
   }, []);
 
+  var timer = null;
+
   useEffect(() => {
     const query = ref(rdb, "/NODES");
 
@@ -229,10 +238,17 @@ function Dashboard() {
         const trucks = Object.keys(data).map((key) => data[key]);
 
         if (!("current" in trucks[0])) {
-          setTrucks({
-            fetchState: 2,
-            trucks: [],
-          });
+          if (timer) {
+            clearTimeout(timer);
+            timer = null;
+          }
+
+          timer = setTimeout(() => {
+            setTrucks({
+              fetchState: 2,
+              trucks: [],
+            });
+          }, 5000);
 
           return;
         }
