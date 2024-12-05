@@ -13,7 +13,15 @@ import { GpsFixed } from "@mui/icons-material";
 import { CircularProgress } from "@mui/material";
 import logo from "../assets/images/logo.png";
 
-function TrackerMap({ map, setMap, trucks, track, screenshotter, onReset }) {
+function TrackerMap({
+  map,
+  setMap,
+  trucks,
+  track,
+  screenshotter,
+  onReset,
+  isOpenEmptyNotif,
+}) {
   const initialMap = useMemo(
     () => (
       <MapContainer
@@ -91,7 +99,7 @@ function TrackerMap({ map, setMap, trucks, track, screenshotter, onReset }) {
           </h1>
         </div>
       )}
-      {trucks.fetchState == 2 && (
+      {isOpenEmptyNotif === true && (
         <div className="w-full h-full absolute bg-white/20 text-[#2f2f2f] z-10 gap-2 flex flex-col items-center justify-center">
           <div className="w-[350px] h-[260px] bg-white rounded-lg flex flex-col p-4">
             <h1 className="font-bold text-lg">Garbage Truck Not in Range</h1>

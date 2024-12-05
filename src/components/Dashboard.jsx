@@ -51,6 +51,7 @@ function Dashboard() {
   const [marker, setMarker] = useState([]);
   const [screenshotter, setScreenshotter] = useState(null);
   const [onReset, setReset] = useState(false);
+  const [isOpenEmptyNotif, setOpenEmptyNotif] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -195,21 +196,26 @@ function Dashboard() {
         const trucks = Object.keys(data).map((key) => data[key]);
 
         if (!("current" in trucks[0])) {
+          setTrucks({
+            fetchState: 2,
+            trucks: [],
+          });
+
+          setOpenEmptyNotif(true);
+
           if (timer) {
             clearTimeout(timer);
             timer = null;
           }
 
           timer = setTimeout(() => {
-            setTrucks({
-              fetchState: 2,
-              trucks: [],
-            });
+            setOpenEmptyNotif(false);
           }, 5000);
 
           return;
         }
 
+        setOpenEmptyNotif(false);
         setTrucks({
           fetchState: 1,
           trucks: trucks,
@@ -238,21 +244,26 @@ function Dashboard() {
         const trucks = Object.keys(data).map((key) => data[key]);
 
         if (!("current" in trucks[0])) {
+          setTrucks({
+            fetchState: 2,
+            trucks: [],
+          });
+
+          setOpenEmptyNotif(true);
+
           if (timer) {
             clearTimeout(timer);
             timer = null;
           }
 
           timer = setTimeout(() => {
-            setTrucks({
-              fetchState: 2,
-              trucks: [],
-            });
+            setOpenEmptyNotif(false);
           }, 5000);
 
           return;
         }
 
+        setOpenEmptyNotif(false);
         setTrucks({
           fetchState: 1,
           trucks: trucks,
@@ -344,6 +355,7 @@ function Dashboard() {
         onReset={() => {
           setReset(true);
         }}
+        isOpenEmptyNotif={isOpenEmptyNotif}
       />
       <PopupDialog
         show={onReset}
