@@ -79,10 +79,10 @@ function ScheduleBox({
       name: "Area",
       width: 100,
     },
-    {
-      name: "Day",
-      width: 50,
-    },
+    // {
+    //   name: "Day",
+    //   width: 50,
+    // },
     {
       name: "Time",
       width: 50,
