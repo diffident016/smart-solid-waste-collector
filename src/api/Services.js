@@ -132,6 +132,12 @@ const updateSchedule = (id, schedule) => {
   return updateDoc(ref, schedule);
 };
 
+const updateFeedback = (id, status) => {
+  const ref = doc(db, "Feedbacks", id);
+
+  return updateDoc(ref, { status: status });
+};
+
 export {
   getUser,
   addAnnouncement,
@@ -152,4 +158,5 @@ export {
   deleteLocation,
   updateLocation,
   updateSchedule,
+  updateFeedback,
 };
