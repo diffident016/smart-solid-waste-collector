@@ -18,7 +18,7 @@ function Feedback({ feedbacks }) {
   const [preview, setPreview] = useState(null);
   const [isDelete, setDelete] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState({});
   const dispatch = useDispatch();
 
   const open = Boolean(anchorEl);
@@ -228,7 +228,11 @@ function Feedback({ feedbacks }) {
             >
               <ListItemIcon>
                 <input
-                  checked={selected.status === "Accomplished"}
+                  checked={
+                    selected.status !== undefined
+                      ? selected.status === "Accomplished"
+                      : false
+                  }
                   readOnly
                   type="checkbox"
                   className="accent-green-800"
@@ -244,7 +248,11 @@ function Feedback({ feedbacks }) {
             >
               <ListItemIcon>
                 <input
-                  checked={!selected.status || selected.status === "Pending"}
+                  checked={
+                    selected.status === undefined
+                      ? true
+                      : selected.status === "Pending"
+                  }
                   type="checkbox"
                   className="accent-orange-500 text-white"
                   readOnly
@@ -260,7 +268,11 @@ function Feedback({ feedbacks }) {
             >
               <ListItemIcon>
                 <input
-                  checked={selected.status === "On-Going"}
+                  checked={
+                    selected.status !== undefined
+                      ? selected.status === "On-Going"
+                      : false
+                  }
                   readOnly
                   type="checkbox"
                   className="accent-blue-800"
