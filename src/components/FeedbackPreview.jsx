@@ -37,7 +37,7 @@ function FeedbackPreview({ feedback, close }) {
             })}
           </div>
         )}
-        <div className="w-full min-h-40 bg-white p-4 rounded-lg">
+        <div className="w-full min-h-40 h-full bg-white p-4 rounded-lg">
           <p className="text-sm truncate text-wrap">{feedback["Feedback"]}</p>
         </div>
       </div>
