@@ -186,20 +186,19 @@ function Dashboard() {
           return marker;
         });
 
-        let tempM2 = [points[0]].map((item) => {
-          const marker = L.marker(item, { icon: iconRed }).addTo(map);
+        //  tempM2 = [points[0]].map((item) => {
+        //     const marker = L.marker(item, { icon: iconRed }).addTo(map);
 
-          // marker.bindTooltip("Truck 1 - Start", {
-          //   permanent: true,
-          //   direction: "top",
-          //   offset: L.point(-15, -15),
-          // });
+        //     // marker.bindTooltip("Truck 1 - Start", {
+        //     //   permanent: true,
+        //     //   direction: "top",
+        //     //   offset: L.point(-15, -15),
+        //     // });
 
-          return marker;
-        });
+        //     return marker;
+        //   });
 
-        tempM2 = [
-          ...tempM2,
+        let tempM2 = [
           collectionPoints.map((item, index) => {
             const marker = L.marker(item, { icon: iconDefault }).addTo(map);
 
