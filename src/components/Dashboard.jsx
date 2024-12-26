@@ -198,23 +198,21 @@ function Dashboard() {
         //     return marker;
         //   });
 
-        let tempM2 = [
-          collectionPoints.map((item, index) => {
-            const marker = L.marker(item, { icon: iconDefault }).addTo(map);
+        let tempM2 = collectionPoints.map((item, index) => {
+          const marker = L.marker(item, { icon: iconDefault }).addTo(map);
 
-            marker.bindTooltip(`Collection Point - ${index + 1}`, {
-              permanent: true,
-              direction: "top",
-              offset: L.point(-15, -15),
-            });
+          marker.bindTooltip(`Collection Point - ${index + 1}`, {
+            permanent: true,
+            direction: "top",
+            offset: L.point(-15, -15),
+          });
 
-            return marker;
-          }),
-        ];
+          return marker;
+        });
 
         temp.addTo(map);
-        setMarker(tempM);
-        setMarker(tempM2);
+        setMarker([...tempM, ...tempM2]);
+        //setMarker(tempM2);
 
         setRoute(temp);
       } catch (err) {
