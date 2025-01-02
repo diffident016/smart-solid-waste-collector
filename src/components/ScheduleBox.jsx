@@ -1,10 +1,17 @@
 import React, { useEffect, useReducer, useState } from "react";
-import { ListItemIcon, Menu, MenuItem, MenuList } from "@mui/material";
+import {
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  MenuList,
+  Backdrop,
+} from "@mui/material";
 import {
   EllipsisVerticalIcon,
   PencilSquareIcon,
   PlusIcon,
   TrashIcon,
+  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { addSchedule, deleteSchedule } from "../api/Services";
 import { show } from "../states/alerts";
@@ -31,6 +38,7 @@ function ScheduleBox({
   const [scheds, setScheds] = useState([]);
   const [onUpdate, setUpdate] = useState(false);
   const open = Boolean(anchorEl);
+  const [openNote, setNote] = useState("");
 
   const dispatch = useDispatch();
 
@@ -152,10 +160,20 @@ function ScheduleBox({
     >
       <div className="w-full min-h-12 h-12 bg-[#287A2C] flex items-center justify-between pl-4 pr-2">
         <h1 className="font-inter-bold text-lg italic">{brgy["name"]}</h1>
-        <EllipsisVerticalIcon
-          onClick={handleClick}
-          className="w-8 cursor-pointer select-none"
-        />
+        <div className="flex flex-row gap-2 items-center">
+          <button
+            onClick={() => {
+              setNote(brgy["name"]);
+            }}
+            className="h-[25px] px-2 bg-[#5da65f] rounded-2xl text-xs shadow-lg "
+          >
+            NOTE
+          </button>
+          <EllipsisVerticalIcon
+            onClick={handleClick}
+            className="w-8 cursor-pointer select-none"
+          />
+        </div>
       </div>
       <div className="w-full min-h-8 h-8 bg-[#376B39] flex flex-row items-center px-4">
         {headers.map((item, index) => {
@@ -163,7 +181,7 @@ function ScheduleBox({
             <p
               key={index}
               className={`${
-                index == 0 ? "w-1/2" : "w-1/4"
+                index == 0 ? "w-[60%]" : "w-[40%]"
               } text-sm uppercase font-inter ml-2`}
             >
               {item.name}
@@ -408,6 +426,34 @@ function ScheduleBox({
           </MenuItem>
         </MenuList>
       </Menu>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={openNote}
+      >
+        {openNote && (
+          <div className="w-[400px] h-min-[350px] bg-[#5da65f] rounded-lg flex flex-col p-8 text-white gap-4">
+            <div className="w-full flex flex-row justify-between items-center">
+              <h1 className="font-inter-bold text-lg">Note:</h1>
+              <div
+                onClick={() => {
+                  setNote("");
+                }}
+                className="p-[2px] cursor-pointer"
+              >
+                <XMarkIcon className="w-6 h-6 text-white" />
+              </div>
+            </div>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+              enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
+              reprehenderit in voluptate velit esse cillum dolore eu fugiat
+              nulla pariatur.{" "}
+            </p>
+          </div>
+        )}
+      </Backdrop>
     </div>
   );
 }
