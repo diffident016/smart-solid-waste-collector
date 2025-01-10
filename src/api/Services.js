@@ -114,6 +114,14 @@ const addBrgy = (id, brgy) => {
   });
 };
 
+const onSetNote = (id, note) => {
+  const ref = doc(db, "Locations", id);
+
+  return updateDoc(ref, {
+    note,
+  });
+};
+
 const removeBrgy = (id, brgy) => {
   const ref = doc(db, "Locations", id);
 
@@ -159,4 +167,5 @@ export {
   updateLocation,
   updateSchedule,
   updateFeedback,
+  onSetNote,
 };

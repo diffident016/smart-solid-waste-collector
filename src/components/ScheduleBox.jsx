@@ -13,7 +13,7 @@ import {
   TrashIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { addSchedule, deleteSchedule } from "../api/Services";
+import { addSchedule, deleteSchedule, onSetNote } from "../api/Services";
 import { show } from "../states/alerts";
 import { useDispatch } from "react-redux";
 import { format } from "date-fns-tz";
@@ -38,7 +38,9 @@ function ScheduleBox({
   const [scheds, setScheds] = useState([]);
   const [onUpdate, setUpdate] = useState(false);
   const open = Boolean(anchorEl);
-  const [openNote, setNote] = useState("");
+  const [openNote, setOpenNote] = useState(null);
+  const [addNote, setAddNote] = useState(false);
+  const [note, setNote] = useState("");
 
   const dispatch = useDispatch();
 
@@ -143,6 +145,27 @@ function ScheduleBox({
       });
   };
 
+  const onAddNote = async () => {
+    console.log(openNote);
+    await onSetNote(openNote["id"], note)
+      .then((_) => {
+        setNote("");
+        setAddNote(false);
+        setOpenNote(null);
+        dispatch(
+          show({
+            type: "success",
+            message: "Note has been saved successfully.",
+            duration: 3000,
+            show: true,
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const handleReset = () => {
     Object.keys(form).forEach((inputKey) => {
       if (inputKey != "location") {
@@ -163,7 +186,7 @@ function ScheduleBox({
         <div className="flex flex-row gap-2 items-center">
           <button
             onClick={() => {
-              setNote(brgy["name"]);
+              setOpenNote(location);
             }}
             className="h-[25px] px-2 bg-[#5da65f] rounded-2xl text-xs shadow-lg "
           >
@@ -431,26 +454,50 @@ function ScheduleBox({
         open={openNote}
       >
         {openNote && (
-          <div className="w-[400px] h-min-[350px] bg-[#5da65f] rounded-lg flex flex-col p-8 text-white gap-4">
+          <div className="w-[400px] min-h-[350px] bg-[#5da65f] rounded-lg flex flex-col p-8 text-white gap-4">
             <div className="w-full flex flex-row justify-between items-center">
               <h1 className="font-inter-bold text-lg">Note:</h1>
               <div
                 onClick={() => {
-                  setNote("");
+                  setOpenNote(null);
                 }}
                 className="p-[2px] cursor-pointer"
               >
                 <XMarkIcon className="w-6 h-6 text-white" />
               </div>
             </div>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur.{" "}
-            </p>
+            {!addNote && (
+              <div className="flex grow">
+                {openNote["note"] ? (
+                  <p>{openNote["note"]}</p>
+                ) : (
+                  <p>There is no note added yet.</p>
+                )}
+              </div>
+            )}
+            {addNote && (
+              <textarea
+                required
+                value={note}
+                placeholder="Input note..."
+                onChange={(e) => {
+                  setNote(e.target.value);
+                }}
+                className="mt-2 bg-white rounded-md resize-none focus:outline-none p-4 text-[#2f2f2f]/80 grow"
+              />
+            )}
+            <button
+              onClick={() => {
+                if (!addNote) {
+                  setAddNote(true);
+                } else {
+                  onAddNote();
+                }
+              }}
+              className="bg-[#287b2d] w-[150px] h-9 rounded-lg text-white mt-4 self-end text-sm"
+            >
+              {addNote ? "Save" : openNote["note"] ? "Update" : "Add"}
+            </button>
           </div>
         )}
       </Backdrop>
